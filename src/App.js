@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import React from 'react';
+import { useEffect, useState } from 'react';
+export default function App() {
+  const[todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    if (savedTodos) {
+      return JSON.parse(savedTodos);
+    } else {
+      return[];
+    }
+  });
+  const[todo, setTodo] = useState("");
+  useEffect(() => {
+   localStorage.setItem("todos", JSON.stringify(todos));
+  } , [todos]);
+  function handleInputChange(e) {
+    setTodo(e.target.value);
+  }
+  function handleFormSubmit(e) {
+    e.preventDefault();
+  if(todo!== "") {
+    setTodos([
+      ...todos,
+      {
+        id: todos.length +1,
+        text: todo.trim()
+      }
+    ]);
+  }
+  setTodo("");
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+          <h1>Todo App</h1>
+      <form onSubmit={handleFormSubmit}>
+<input
+name= "todo"
+type= "text"
+placeholder="Create a new todo"
+value= {todo}
+onChange={handleInputChange}
+/>
+      </form>
+      <ul className= "todo-list">
+{todos.map((todo) => (
+  <li key={todo.id}>{todo.text}</li>
+))}
+</ul>
     </div>
   );
 }
 
-export default App;
